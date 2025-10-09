@@ -8,7 +8,7 @@ use Exception;
 abstract class Database {
     private ?PDO $pdo = null;
     protected ?PDOStatement $stmt = null;
-    private string $tableName;
+    protected string $tableName;
     
     public function __construct(string $tableName) {
         $this->tableName = $tableName;
@@ -47,7 +47,8 @@ abstract class Database {
     // Read
     protected function readOne(int $id): ?array {
         $this->sqlQuery("SELECT * FROM $this->tableName WHERE id = :id;", ['id' => $id]);
-        return $this->stmt->fetch(PDO::FETCH_ASSOC);
+        $result= $this->stmt->fetch(PDO::FETCH_ASSOC);
+        return $result === false ? null : $result;
     }
     
     protected function readAll(array $filters): array {

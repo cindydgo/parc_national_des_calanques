@@ -1,13 +1,20 @@
 <?php
 namespace App\Models;
 
-final class ProductModel extends Model {
-    public static function init(): void {
-        parent::setTableName('product_models');
+use App\Core\Model;
+
+final class ProductModel extends Model
+{
+    public function __construct()
+    {
+        parent::__construct('product_component_items'); // nom de la table
     }
-    
-    // Récupérer les détails d'un produit spécifique
-    public static function details(int $id): array {
+
+    /**
+     * Récupérer les détails d'un produit spécifique
+     */
+    public function details(int $id): array
+    {
         $query = '
             SELECT pci.*,
                    b.name AS brand_name,
@@ -24,28 +31,37 @@ final class ProductModel extends Model {
             WHERE pci.id = :id
             LIMIT 1;
         ';
-        
-        return parent::sqlQuery($query, ['id' => $id])
-            ? parent::$cursor->fetch()
-            : [];
+
+        $this->sqlQuery($query, ['id' => $id]);
+        return $this->stmt ? $this->stmt->fetch(\PDO::FETCH_ASSOC) : [];
     }
-    
-    // Récupérer une liste de produits à partir de filtres spécifiques
-    public static function findByFilters(array $filters = [], int $limit = 20, int $offset = 0): array {
-        $query = 'SELECT * FROM product_component_items WHERE 1 = 1';
+
+    /**
+     * Récupérer une liste de produits à partir de filtres spécifiques
+     */
+    public function findByFilters(array $filters = [], int $limit = 20, int $offset = 0): array
+    {
+        $query = 'SELECT * FROM product_component_items pci WHERE 1 = 1';
+
         foreach ($filters as $key => $value) {
             if (!empty($value)) {
                 $query .= " AND pci.$key = :$key";
             }
         }
-        $query .= " LIMIT $limit, $offset;";
-        
-        parent::sqlQuery($query, $filters);
-        return parent::$cursor->fetchAll();
+
+        $query .= " LIMIT :limit OFFSET :offset";
+        $filters['limit'] = $limit;
+        $filters['offset'] = $offset;
+
+        $this->sqlQuery($query, $filters);
+        return $this->stmt ? $this->stmt->fetchAll(\PDO::FETCH_ASSOC) : [];
     }
-    
-    // Récupérer une liste de produits depuis une recherche
-    public static function findByResearch(string $search): array {
+
+    /**
+     * Récupérer une liste de produits depuis une recherche textuelle
+     */
+    public function findByResearch(string $search): array
+    {
         $query = '
             SELECT pci.*,
                    b.name AS brand_name,
@@ -61,8 +77,8 @@ final class ProductModel extends Model {
             LEFT JOIN product_components pc ON pc.id = pci.product_component_fk
             WHERE pc.name LIKE :s OR b.name LIKE :s OR cm.name LIKE :s
         ';
-        
-        parent::sqlQuery($query, ['s' => $search]);
-        return parent::$cursor->fetchAll();
+
+        $this->sqlQuery($query, ['s' => "%$search%"]);
+        return $this->stmt ? $this->stmt->fetchAll(\PDO::FETCH_ASSOC) : [];
     }
 }

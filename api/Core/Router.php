@@ -1,55 +1,67 @@
 <?php
 namespace Core;
 
-final class Router {
-    public function redirect(): void {
+use Core\ApiResponse;
+
+final class Router
+{
+    public function redirect(): void
+    {
         header('Content-Type: application/json');
-        
+
         $method = $_SERVER['REQUEST_METHOD'];
         $resource = $_GET['resource'] ?? null;
-        
+
+        if (!$resource) {
+            ApiResponse::error("Aucune ressource spécifiée", [], 400);
+        }
+
         $controllerName = ucfirst($resource) . 'Controller';
         $controllerClass = "\\App\\Controllers\\$controllerName";
-        
+
         if (!class_exists($controllerClass)) {
-            http_response_code(404);
-            echo json_encode(["error" => "Contrôleur $controllerName introuvable."]);
-            exit;
+            ApiResponse::error("Contrôleur $controllerName introuvable.", [], 404);
         }
-        
+
         $controller = new $controllerClass();
         $input = json_decode(file_get_contents('php://input'), true) ?? [];
-        
-        switch ($method) {
-            case 'GET':
-                if (isset($_GET['id'])) {
-                    $controller->show((int) $_GET['id']);
-                } else {
-                    $controller->index($_GET);
-                }
-                break;
-            
-            case 'POST':
-                $controller->store($input);
-                break;
-            
-            case 'PUT':
-            case 'PATCH':
-                $controller->update($input);
-                break;
-            
-            case 'DELETE':
-                if (isset($_GET['id'])) {
-                    $controller->destroy((int) $_GET['id']);
-                } else {
-                    http_response_code(400);
-                    echo json_encode(["error" => "ID requis pour suppression."]);
-                }
-                break;
-            
-            default:
-                http_response_code(405);
-                echo json_encode(["error" => "Méthode $method non autorisée."]);
+
+        try {
+            switch ($method) {
+                case 'GET':
+                    if (isset($_GET['id'])) {
+                        $controller->show((int) $_GET['id']);
+                    } else {
+                        $controller->index($_GET);
+                    }
+                    break;
+
+                case 'POST':
+                    $controller->store($input);
+                    break;
+
+                case 'PUT':
+                case 'PATCH':
+                    if (isset($_GET['id'])) {
+                        $controller->update((int) $_GET['id'], $input);
+                    } else {
+                        ApiResponse::error("ID requis pour mise à jour.", [], 400);
+                    }
+                    break;
+
+                case 'DELETE':
+                    if (isset($_GET['id'])) {
+                        $controller->delete((int) $_GET['id']);
+                    } else {
+                        ApiResponse::error("ID requis pour suppression.", [], 400);
+                    }
+                    break;
+
+                default:
+                    ApiResponse::error("Méthode $method non autorisée.", [], 405);
+            }
+        } catch (\Exception $e) {
+            ApiResponse::error("Erreur serveur : " . $e->getMessage(), [], 500);
         }
     }
 }
