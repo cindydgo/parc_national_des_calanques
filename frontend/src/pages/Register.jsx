@@ -1,3 +1,5 @@
-export default function Register() {
-  return <h1>Page d'inscription 📝</h1>;
+const Register = () => {
+    return <h1>Register Page</h1>;
 }
+
+export default Register;

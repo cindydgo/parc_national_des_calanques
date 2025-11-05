@@ -14,7 +14,7 @@ final class SentierController
     }
 
     /**
-     * GET /api/trails
+     * GET /api/sentiers
      */
     public function index(array $filters = []): void
     {

@@ -6,12 +6,9 @@ use Core\ApiResponse;
 
 final class VisiteurModel extends Model
 {
-    /**
-     * Constructeur - définit la table associée
-     */
     public function __construct()
     {
-        parent::__construct('visiteurs'); // table "visiteurs" dans ta BDD
+        parent::__construct('visiteurs');
     }
 
     /**

@@ -4,14 +4,10 @@ namespace Core;
 use Core\Database;
 
 abstract class Model extends Database {
-    protected string $table; // nom de la table associée au modèle
+    protected string $table;
 
-    /**
-     * Constructeur
-     */
     public function __construct(string $table = '')
     {
-        // Si la classe fille définit $table, on l'utilise, sinon on prend le paramètre
         $tableName = $table ?: $this->table;
         parent::__construct($tableName);
     }

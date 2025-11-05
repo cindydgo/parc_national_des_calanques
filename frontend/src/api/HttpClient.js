@@ -3,13 +3,26 @@ import { FETCH_USE_CREDENTIALS } from "../../config/bootstrap.js";
 async function fetchRequest(url, options, resultType = "json") {
     let errors = [];
     let response;
-
+    
     try {
-        options.credentials = 'include';
+        const token = localStorage.getItem("authToken");
+
+        options.headers = {
+            "Content-Type": "application/json",
+            ...(options.headers || {}),
+        };
+
+        if (token) {
+            options.headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        options.credentials = options.credentials || 'include';
+
         response = await fetch(url, options);
     } catch (err) {
         errors.push(`[HttpRequest] ~ ${options.method ?? "GET"} ~ ${url} : ${err}`);
         console.error(errors[0]);
+        return ErrorHandler("Une erreur est survenue lors de la requête.", 0, errors);
     }
 
     if (!response) {
@@ -51,8 +64,32 @@ async function get(url, options = {}, resultType = "json") {
 async function post(url, data, options = {}, resultType = "json") {
     options = {
         ...options,
+        method: 'POST',
         body: JSON.stringify(data)
     }
+    return await fetchRequest(url, options, resultType);
+}
+
+async function put(url, data, options = {}, resultType = "json") {
+    options = {
+        ...options,
+        method: 'PUT',
+        body: JSON.stringify(data)
+    }
+    return await fetchRequest(url, options, resultType);
+}
+
+async function patch(url, data, options = {}, resultType = "json") {
+    options = {
+        ...options,
+        method: 'PATCH',
+        body: JSON.stringify(data)
+    }
+    return await fetchRequest(url, options, resultType);
+}
+
+async function remove(url, options = {}, resultType = "json") {
+    options = { ...options, method: "DELETE" };
     return await fetchRequest(url, options, resultType);
 }
 
@@ -65,5 +102,5 @@ function ErrorHandler(message, status, errors = []) {
     };
 }
 
-const HttpRequest = { get, post };
+const HttpRequest = { get, post, put, patch, remove };
 export default HttpRequest;
