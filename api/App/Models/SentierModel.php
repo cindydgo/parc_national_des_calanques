@@ -12,69 +12,57 @@ final class SentierModel extends Model
     }
 
     /**
-     * Récupérer tous les sentiers
+     * Get all trails with optional filters
+     * @param array $filters Filters to apply
+     * @return array
      */
     public function getSentiers(array $filters = []): array
     {
-        unset($filters['resource']);
         $sentiers = $this->all($filters);
-
-        if (empty($sentiers)) {
-            ApiResponse::success("Aucun sentier trouvé", []);
-        }
 
         return $sentiers;
     }
 
     /**
-     * Récupérer un sentier par son ID
+     * Get a single trail by ID
+     * @param int $id trail ID
+     * @return array|null
      */
     public function getSentier(int $id): ?array
     {
         $sentier = $this->find($id);
 
-        if (!$sentier) {
-            ApiResponse::error("Aucun sentier trouvé avec l'ID $id", [], 404);
-        }
-
         return $sentier;
     }
 
     /**
-     * Créer un nouveau sentier
+     * Create a new trail
+     * @param array $data trail data
+     * @return bool
      */
     public function createSentier(array $data): bool
     {
-        if (empty($data['name']) || empty($data['difficulty'])) {
-            ApiResponse::error("Les champs 'nom' et 'difficulté' sont requis");
-        }
-
         return $this->create($data);
     }
 
     /**
-     * Mettre à jour un sentier existant
+     * Update an existing trail
+     * @param int $id trail ID
+     * @param array $data trail data
+     * @return bool
      */
     public function updateSentier(int $id, array $data): bool
     {
-        $sentier = $this->find($id);
-        if (!$sentier) {
-            ApiResponse::error("Sentier introuvable pour mise à jour", [], 404);
-        }
-
         return $this->update($id, $data);
     }
 
     /**
-     * Supprimer un sentier
+     * Delete a trail
+     * @param int $id trail ID
+     * @return bool
      */
     public function deleteSentier(int $id): bool
     {
-        $sentier = $this->find($id);
-        if (!$sentier) {
-            ApiResponse::error("Sentier introuvable pour suppression", [], 404);
-        }
-
         return $this->delete($id);
     }
 }

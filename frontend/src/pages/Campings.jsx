@@ -52,15 +52,16 @@ const Campings = () => {
 
     return (
         <div>
-        {campings.length > 0 ? (
-            campings.map((camping, index) => (
-                <pre key={index}>
-                    {JSON.stringify(camping, null, 2)}
-                </pre>
-            ))
-            ) : (
-                <p>Aucun Camping à afficher.</p>
-        )}
+            <h2>Les Campings</h2>
+            {campings.length > 0 ? (
+                campings.map((camping, index) => (
+                    <pre key={index}>
+                        {JSON.stringify(camping, null, 2)}
+                    </pre>
+                ))
+                ) : (
+                    <p>Aucun Camping à afficher.</p>
+            )}
         </div>
     )
 }

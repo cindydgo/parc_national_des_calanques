@@ -1,28 +1,13 @@
-import { FETCH_USE_CREDENTIALS } from "../../config/bootstrap.js";
-
 async function fetchRequest(url, options, resultType = "json") {
     let errors = [];
     let response;
-    
+
     try {
-        const token = localStorage.getItem("authToken");
-
-        options.headers = {
-            "Content-Type": "application/json",
-            ...(options.headers || {}),
-        };
-
-        if (token) {
-            options.headers["Authorization"] = `Bearer ${token}`;
-        }
-
-        options.credentials = options.credentials || 'include';
-
+        options.credentials = 'include';
         response = await fetch(url, options);
     } catch (err) {
         errors.push(`[HttpRequest] ~ ${options.method ?? "GET"} ~ ${url} : ${err}`);
         console.error(errors[0]);
-        return ErrorHandler("Une erreur est survenue lors de la requête.", 0, errors);
     }
 
     if (!response) {

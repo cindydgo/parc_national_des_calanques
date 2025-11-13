@@ -52,15 +52,16 @@ const Resources = () => {
 
     return (
         <div>
-        {resources.length > 0 ? (
-            resources.map((resource, index) => (
-                <pre key={index}>
-                    {JSON.stringify(resource, null, 2)}
-                </pre>
-            ))
-            ) : (
-                <p>Aucune Ressource à afficher.</p>
-        )}
+            <h2>Les Ressources</h2>
+            {resources.length > 0 ? (
+                resources.map((resource, index) => (
+                    <pre key={index}>
+                        {JSON.stringify(resource, null, 2)}
+                    </pre>
+                ))
+                ) : (
+                    <p>Aucune Ressource à afficher.</p>
+            )}
         </div>
     )
 }

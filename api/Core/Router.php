@@ -9,8 +9,14 @@ final class Router
     {
         header('Content-Type: application/json');
 
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { 
+            ApiResponse::success("Requête OPTIONS réussie.", [], 200); 
+            exit(); 
+        }
+
         $method = $_SERVER['REQUEST_METHOD'];
-        $resource = $_GET['resource'] ?? null;
+        $resource = trim($_GET['resource'] ?? '');
+        $action = trim($_GET['action'] ?? '');
 
         if (!$resource) {
             ApiResponse::error("Aucune ressource spécifiée", [], 400);
@@ -24,6 +30,12 @@ final class Router
         }
 
         $controller = new $controllerClass();
+
+        if ($action && method_exists($controller, $action)) {
+            $controller->$action();
+            return;
+        }
+
         $input = json_decode(file_get_contents('php://input'), true) ?? [];
 
         try {

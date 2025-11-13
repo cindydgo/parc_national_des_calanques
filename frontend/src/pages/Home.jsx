@@ -11,14 +11,3 @@ function Home() {
 }
 
 export default Home
-
-/*  <section className="home-logements">
-            {logements.map(logement => (
-                <div className="logement" key={logement.id}>
-                    <Link to={`/logements/${logement.id}`}>
-                        <img src={logement.cover} alt="logement" />
-                        <p className='logement_title'>{logement.title}</p>
-                    </Link>
-                </div>
-            ))}
-            </section> */

@@ -12,69 +12,57 @@ final class NotificationModel extends Model
     }
 
     /**
-     * Récupérer toutes les notifications
+     * Get all notifications with optional filters
+     * @param array $filters Filters to apply
+     * @return array
      */
     public function getNotifications(array $filters = []): array
     {
-        unset($filters['resource']);
         $notifications = $this->all($filters);
-
-        if (empty($notifications)) {
-            ApiResponse::success("Aucune notification trouvée", []);
-        }
 
         return $notifications;
     }
 
     /**
-     * Récupérer une notification par son ID
+    * Get a single notification by ID
+     * @param int $id Notification ID
+     * @return array|null
      */
     public function getNotification(int $id): ?array
     {
         $notification = $this->find($id);
 
-        if (!$notification) {
-            ApiResponse::error("Aucune notification trouvée avec l'ID $id", [], 404);
-        }
-
         return $notification;
     }
 
     /**
-     * Créer une nouvelle notification
+    * Create a new notification
+     * @param array $data Notification data
+     * @return bool
      */
     public function createNotification(array $data): bool
     {
-        if (empty($data['title']) || empty($data['message'])) {
-            ApiResponse::error("Les champs 'titre' et 'message' sont requis");
-        }
-
         return $this->create($data);
     }
 
     /**
-     * Mettre à jour une notification existante
+     * Update an existing notification
+     * @param int $id Notification ID
+     * @param array $data Notification data
+     * @return bool
      */
     public function updateNotification(int $id, array $data): bool
     {
-        $notification = $this->find($id);
-        if (!$notification) {
-            ApiResponse::error("Notification introuvable pour mise à jour", [], 404);
-        }
-
         return $this->update($id, $data);
     }
 
     /**
-     * Supprimer une notification
+     * Delete a notification
+     * @param int $id Notification ID
+     * @return bool
      */
     public function deleteNotification(int $id): bool
     {
-        $notification = $this->find($id);
-        if (!$notification) {
-            ApiResponse::error("Notification introuvable pour suppression", [], 404);
-        }
-
         return $this->delete($id);
     }
 }

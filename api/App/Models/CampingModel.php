@@ -12,69 +12,57 @@ final class CampingModel extends Model
     }
 
     /**
-     * Récupérer tous les campings
+     * Get all campings with optional filters
+     * @param array $filters Filters to apply
+     * @return array
      */
     public function getCampings(array $filters = []): array
     {
-        unset($filters['resource']);
         $campings = $this->all($filters);
-
-        if (empty($campings)) {
-            ApiResponse::success("Aucun camping trouvé", []);
-        }
 
         return $campings;
     }
 
     /**
-     * Récupérer un camping par son ID
+     * Get a single camping by ID
+     * @param int $id Camping ID
+     * @return array|null   
      */
     public function getCamping(int $id): ?array
     {
         $camping = $this->find($id);
 
-        if (!$camping) {
-            ApiResponse::error("Aucun camping trouvé avec l'ID $id", [], 404);
-        }
-
         return $camping;
     }
 
     /**
-     * Créer un nouveau camping
+     * Create a new camping
+     * @param array $data User data
+     * @return bool
      */
     public function createCamping(array $data): bool
     {
-        if (empty($data['name']) || empty($data['location'])) {
-            ApiResponse::error("Les champs 'nom' et 'location' sont requis");
-        }
-
         return $this->create($data);
     }
 
     /**
-     * Mettre à jour un camping existant
+     * Update an existing camping
+     * @param int $id Camping ID
+     * @param array $data Camping data
+     * @return bool
      */
     public function updateCamping(int $id, array $data): bool
     {
-        $camping = $this->find($id);
-        if (!$camping) {
-            ApiResponse::error("Camping introuvable pour mise à jour", [], 404);
-        }
-
         return $this->update($id, $data);
     }
 
     /**
-     * Supprimer un camping
+     * Delete a camping
+     * @param int $id Camping ID
+     * @return bool
      */
     public function deleteCamping(int $id): bool
     {
-        $camping = $this->find($id);
-        if (!$camping) {
-            ApiResponse::error("Camping introuvable pour suppression", [], 404);
-        }
-
         return $this->delete($id);
     }
 }

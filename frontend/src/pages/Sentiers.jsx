@@ -52,15 +52,16 @@ const Sentiers = () => {
 
     return (
         <div>
-        {sentiers.length > 0 ? (
-            sentiers.map((sentier, index) => (
-                <pre key={index}>
-                    {JSON.stringify(sentier, null, 2)}
-                </pre>
-            ))
-            ) : (
-                <p>Aucun Sentier à afficher.</p>
-        )}
+            <h2>Les Sentiers</h2>
+            {sentiers.length > 0 ? (
+                sentiers.map((sentier, index) => (
+                    <pre key={index}>
+                        {JSON.stringify(sentier, null, 2)}
+                    </pre>
+                ))
+                ) : (
+                    <p>Aucun Sentier à afficher.</p>
+            )}
         </div>
     )
 }

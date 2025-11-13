@@ -2,7 +2,6 @@
 namespace App\Models;
 
 use Core\Model;
-use Core\ApiResponse;
 
 final class UserModel extends Model
 {
@@ -12,69 +11,107 @@ final class UserModel extends Model
     }
 
     /**
-     * Récupérer tous les utilisateurs
+     * Get all users with optional filters
+     * @param array $data Filters to apply
+     * @return array
      */
     public function getUsers(array $filters = []): array
     {
-        unset($filters['resource']);
         $users = $this->all($filters);
-
-        if (empty($users)) {
-            ApiResponse::success("Aucun utilisateur trouvé", []);
-        }
 
         return $users;
     }
 
+
     /**
-     * Récupérer un utilisateur par son ID
+     * Get a single user by ID
+     * @param int $id User ID
+     * @return array|null
      */
     public function getUser(int $id): ?array
     {
         $user = $this->find($id);
 
-        if (!$user) {
-            ApiResponse::error("Aucun visiteur trouvé avec l'ID $id", [], 404);
-        }
-
         return $user;
     }
 
     /**
-     * Créer un nouvel utilisateur
+     * Get a user by username or email
+     * @param string $username
+     * @return array|null
      */
-    public function createUser(array $data): bool
+    public function getUserByUsernameOrEmail(string $username, string $email): ?array
     {
-        if (empty($data['nom']) || empty($data['email'])) {
-            ApiResponse::error("Les champs 'nom' et 'email' sont requis");
+        $query = "
+            SELECT *
+            FROM {$this->tableName}
+            WHERE username = :username OR email = :email
+            LIMIT 1
+        ";
+
+        $this->sqlQuery($query, ['username' => $username, 'email' => $email]);
+
+        $result = $this->stmt->fetch(\PDO::FETCH_ASSOC);
+
+        return $result ?: null;
+    }
+
+
+    /**
+     * Create a new user and return its ID
+     * @param array $data User data
+     * @return int|false
+     */
+    public function createUser(array $data): int|false
+    {
+        $created = $this->create($data);
+        if (!$created) {
+            return false;
         }
 
-        return $this->create($data);
+        return (int)$this->getPdo()->lastInsertId();
     }
 
     /**
-     * Mettre à jour un utilisateur existant
+     * Check if a user already exists by username or email
+     * @param string $username
+     * @param string $email
+     * @return bool
+     */
+    public function isUserAlreadyExist(string $username, string $email): bool
+    {
+        $query = "
+                SELECT COUNT(*)     
+                FROM {$this->tableName} 
+                WHERE username = :username OR email = :email
+            ";
+
+        $this->sqlQuery($query, ['username' => $username, 'email' => $email]);
+
+        $count = $this->stmt->fetchColumn();
+
+        return $count > 0;
+    }
+
+
+    /**
+     * Update an existing user
+     * @param int $id User ID
+     * @param array $data User data
+     * @return bool
      */
     public function updateUser(int $id, array $data): bool
     {
-        $user = $this->find($id);
-        if (!$user) {
-            ApiResponse::error("Utilisateur introuvable pour mise à jour", [], 404);
-        }
-
         return $this->update($id, $data);
     }
 
     /**
-     * Supprimer un utilisateur
+     * Delete a user by ID
+     * @param int $id User ID
+     * @return bool
      */
     public function deleteUser(int $id): bool
     {
-        $user = $this->find($id);
-        if (!$user) {
-            ApiResponse::error("Utilisateur introuvable pour suppression", [], 404);
-        }
-
         return $this->delete($id);
     }
 }

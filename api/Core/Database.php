@@ -66,13 +66,18 @@ abstract class Database {
     protected function delete(int $id): bool {
         return $this->sqlQuery("DELETE FROM $this->tableName WHERE id = :id;", ['id' => $id]);
     }
-    
+
     private function getConnection(): void {
         if (!$this->pdo) {
             $this->connect();
         }
     }
     
+    protected function getPdo(): PDO {
+        $this->getConnection();
+        return $this->pdo;
+    }
+
     /**
      * Construit dynamiquement les clauses SQL à partir des filtres fournis.
      * Cette méthode supporte uniquement :

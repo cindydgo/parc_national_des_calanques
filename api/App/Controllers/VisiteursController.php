@@ -4,7 +4,7 @@ namespace App\Controllers;
 use App\Models\VisiteurModel;
 use Core\ApiResponse;
 
-final class VisiteurController
+final class VisiteursController
 {
     private VisiteurModel $model;
 
@@ -13,14 +13,25 @@ final class VisiteurController
         $this->model = new VisiteurModel();
     }
 
-    // GET /api/visiteurs
-    public function index(): void
+    /**
+     * GET /api/visiteurs/
+     * Get all visitors with optional filters
+     * @param array $filters Filters to apply
+     * @return void
+     */
+    public function index(array $filters = []): void
     {
-        $visiteurs = $this->model->getVisiteurs();
+        unset($filters['resource']);
+        $visiteurs = $this->model->getVisiteurs($filters);
         ApiResponse::success('Liste des visiteurs récupérée', $visiteurs);
     }
 
-    // GET /api/visiteurs/{id}
+    /**
+     * GET /api/visiteurs/{id}
+     * Get a single visitor by ID
+     * @param int $id Visitor ID
+     * @return void
+     */
     public function show(int $id): void
     {
         $visiteur = $this->model->getVisiteur($id);
@@ -32,10 +43,15 @@ final class VisiteurController
         ApiResponse::success('Visiteur trouvé', $visiteur);
     }
 
-    // POST /api/visiteurs
+    /**
+     * POST /api/visiteurs/{id}
+     * Create a new visitor
+     * @param array $data Visitor data
+     * @return void
+     */
     public function store(array $data): void
     {
-        if (empty($data['nom']) || empty($data['email'])) {
+        if (empty($data['first_name']) || empty($data['email'])) {
             ApiResponse::error("Champs requis manquants : nom et email");
         }
 
@@ -48,7 +64,13 @@ final class VisiteurController
         }
     }
 
-    // PUT /api/visiteurs/{id}
+    /**
+     * PUT /api/visiteurs/{id}
+     * Update an existing visitor
+     * @param int $id Visitor ID
+     * @param array $data Visitor data
+     * @return void
+     */
     public function update(int $id, array $data): void
     {
         $updated = $this->model->updateVisiteur($id, $data);
@@ -60,7 +82,12 @@ final class VisiteurController
         ApiResponse::success("Visiteur mis à jour avec succès");
     }
 
-    // DELETE /api/visiteurs/{id}
+    /**
+     * DELETE /api/visteurs/{id}
+     * Delete a visitor by ID
+     * @param int $id Visitor ID
+     * @return void
+     */
     public function delete(int $id): void
     {
         $deleted = $this->model->deleteVisiteur($id);

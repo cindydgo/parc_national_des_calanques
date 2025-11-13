@@ -12,69 +12,57 @@ final class VisiteurModel extends Model
     }
 
     /**
-     * Crée un nouveau visiteur
+     * Create a new visitor
+     * @param array $data Visitor data
+     * @return bool
      */
     public function createVisiteur(array $data): bool
     {
-        if (empty($data['nom']) || empty($data['email'])) {
-            ApiResponse::error("Les champs 'nom' et 'email' sont requis");
-        }
-
         return $this->create($data);
     }
 
     /**
-     * Récupère un visiteur spécifique par ID
+     * Get a single visitor by ID
+     * @param int $id Visitor ID
+     * @return array|null
      */
     public function getVisiteur(int $id): ?array
     {
         $visiteur = $this->find($id);
 
-        if (!$visiteur) {
-            ApiResponse::error("Aucun visiteur trouvé avec l'ID $id", [], 404);
-        }
-
         return $visiteur;
     }
 
     /**
-     * Récupère tous les visiteurs avec filtres optionnels
+     * Get all visitors with optional filters
+     * @param array $data Visitors data
+     * @return array
      */
     public function getVisiteurs(array $filters = []): array
     {
-        unset($filters['resource']);
         $visiteurs = $this->all($filters);
-
-        if (empty($visiteurs)) {
-            ApiResponse::success("Aucun visiteur trouvé", []);
-        }
 
         return $visiteurs;
     }
 
     /**
-     * Met à jour un visiteur existant
+     * Update an existing visitor
+     * @param int $id Visitor ID
+     * @param array $data Visitor data
+     * @return bool
      */
     public function updateVisiteur(int $id, array $data): bool
     {
-        $visiteur = $this->find($id);
-        if (!$visiteur) {
-            ApiResponse::error("Visiteur introuvable pour mise à jour", [], 404);
-        }
-
         return $this->update($id, $data);
     }
 
     /**
-     * Supprime un visiteur
+     * Delete a visitor by ID
+     * @param int $id Visitor ID
+     * @return bool
      */
     public function deleteVisiteur(int $id): bool
     {
-        $visiteur = $this->find($id);
-        if (!$visiteur) {
-            ApiResponse::error("Visiteur introuvable pour suppression", [], 404);
-        }
-
         return $this->delete($id);
     }
 }
