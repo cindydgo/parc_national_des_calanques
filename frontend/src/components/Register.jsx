@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form"
 import { useAuth } from "../Context/AuthContext"
 import { useNavigate } from "react-router-dom"
 import { useEffect } from "react"
+import '../assets/css/Register.css'
 
 function RegisterComponent() {
     const { register, handleSubmit } = useForm();
@@ -15,9 +16,9 @@ function RegisterComponent() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-            username: data.username,
-            email: data.email,
-            password: data.password,
+                username: data.username,
+                email: data.email,
+                password: data.password
             }),
             credentials: "include",
         });
@@ -34,13 +35,30 @@ function RegisterComponent() {
     }, [user, navigate]);
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
-            <h1>Inscription</h1>
-            <input type="text" {...register('username')} placeholder="Username" />
-            <input type="email" {...register('email')} placeholder="Email" />
-            <input type="password" {...register('password')} placeholder="Password" />
-            <button type="submit">S'inscrire</button>
-        </form>
+        <div className="form-container d-flex justify-content-center vh-100">
+            <form onSubmit={handleSubmit(onSubmit)} className="register-form d-flex flex-column gap-3 m-5 px-4 py-2 w-100">
+                <h1 className="m-3">Inscription</h1>
+                <input 
+                    type="text" {...register('username')} 
+                    placeholder="Username"
+                    className="form-control rounded-lg"
+                    required
+                />
+                <input 
+                    type="email" {...register('email')} 
+                    placeholder="Email" 
+                    className="form-control rounded-lg"
+                    required
+                />
+                <input 
+                    type="password" {...register('password')} 
+                    placeholder="Password"
+                    className="form-control rounded-lg"
+                    required 
+                />
+                <button type="submit" className="btn btn-custom my-2 fw-semibold">S'inscrire</button>
+            </form>
+        </div>
     );
 }
 

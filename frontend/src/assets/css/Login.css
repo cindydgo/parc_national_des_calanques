@@ -1,0 +1,14 @@
+.form-container{
+    background-image: url(/images/form/background_form.jpg);
+    background-size: cover;
+    background-position: center; 
+}
+
+.login-form{
+    background-color: rgb(118, 153, 175, 0.07);
+    max-width: 400px;
+    max-height: 350px;
+    border-radius: 0.5rem;
+    background-color: rgb(255, 255, 255);
+    box-shadow: -1px 1px 8px rgba(0, 0, 0, 0.4);
+}

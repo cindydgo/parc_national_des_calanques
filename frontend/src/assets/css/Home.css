@@ -1,0 +1,14 @@
+.home-container {
+    background-color: rgb(118, 153, 175, 0.07);
+}
+
+.home-title {
+    text-shadow: 4px 4px 4px #2125292e;
+}
+
+.article-grid-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 10px;
+}

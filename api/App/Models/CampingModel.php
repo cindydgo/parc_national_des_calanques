@@ -2,7 +2,6 @@
 namespace App\Models;
 
 use Core\Model;
-use Core\ApiResponse;
 
 final class CampingModel extends Model
 {

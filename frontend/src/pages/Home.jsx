@@ -1,11 +1,9 @@
-//import { Link } from "react-router-dom"
-import Slideshow from "../components/Slideshow"
+import HomeComponent from "../components/Home"
 
 function Home() {
     return (
-        <div className="home">
-            {/*<Slideshow images=/>*/}
-            <h1>Bienvenue au Parc National des Calanques</h1>
+        <div>
+            <HomeComponent />
         </div>
     )
 }

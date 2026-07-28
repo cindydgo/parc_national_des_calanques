@@ -1,6 +1,9 @@
-ul {
-    list-style: none;
-    display: flex;
-    justify-content: space-evenly;
-    padding-left: 0;
+.navlink-custom {
+    font-weight: 600;
+    color: #000000;
+    transition: color 0.25s;
+}
+
+.navlink-custom:hover {
+    color: #989cea;
 }

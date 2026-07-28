@@ -1,34 +1,19 @@
-carousel-container {
-    position: relative;
-}
-.count {
-    position: absolute;
-    bottom: 20px;
-    font-size: 14px;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-}
-
-.arrow-left {
-    position: absolute;
-    top: 100px;
+.arrow {
+    background-color: rgba(0, 0, 0, 0.277);
+    width: 60px;
     cursor: pointer;
-    width: 34px;
-}
-
-.arrow-right {
     position: absolute;
-    top: 100px;
-    right: 0;
-    cursor: pointer;
+    top: 140px;
 }
 
 .slide {
-    img {
-        width: 100%;
-        height: 300px;
-        border-radius: 25px;
-        object-fit: cover;
-    }
+    height: 350px;
+}
+
+.slideshow-image {
+    object-fit: cover;
+} 
+
+.badge-custom {
+    background-color: rgb(45, 45, 45, 0.7);
 }

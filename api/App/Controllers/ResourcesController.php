@@ -1,20 +1,20 @@
 <?php
 namespace App\Controllers;
 
-use App\Models\ResourcesModel;
+use App\Models\ResourceModel;
 use Core\ApiResponse;
 
 final class ResourcesController
 {
-    private ResourcesModel $model;
+    private ResourceModel $model;
 
     public function __construct()
     {
-        $this->model = new ResourcesModel();
+        $this->model = new ResourceModel();
     }
 
     /**
-     * GET /api/resources
+     * GET /api/Resources
      * Get all resources with optional filters
      * @param array $filters Filters to apply
      * @return void
@@ -23,11 +23,11 @@ final class ResourcesController
     {
         unset($filters['resource']);
         $resources = $this->model->getResources($filters);
-        ApiResponse::success('Liste des ressources naturelles récupérée', $resources, 200);
+        ApiResponse::success('Liste des ressources récupérée', $resources, 200);
     }
 
     /**
-     * GET /api/resources/{id}
+     * GET /api/resource/{id}
      * Get a single resource by ID
      * @param int $id Resource ID
      * @return void
@@ -35,7 +35,7 @@ final class ResourcesController
     public function show(int $id): void
     {
         $resource = $this->model->getResource($id);
-        ApiResponse::success('Ressource naturelle trouvée', $resource, 200);
+        ApiResponse::success('Ressource trouvé', $resource, 200);
     }
 
     /**
@@ -49,7 +49,7 @@ final class ResourcesController
         $created = $this->model->createResource($data);
 
         if ($created) {
-            ApiResponse::success('Ressource créée avec succès', $data, 201);
+            ApiResponse::success('Ressource créé avec succès', $data, 201);
         } else {
             ApiResponse::error("Erreur lors de la création de la ressource", [], 500);
         }
@@ -67,7 +67,7 @@ final class ResourcesController
         $updated = $this->model->updateResource($id, $data);
 
         if ($updated) {
-            ApiResponse::success("Ressource mise à jour avec succès", $data, 200);
+            ApiResponse::success("Ressource mis à jour avec succès", $data, 200);
         } else {
             ApiResponse::error("Erreur lors de la mise à jour de la ressource", [], 500);
         }
@@ -84,7 +84,7 @@ final class ResourcesController
         $deleted = $this->model->deleteResource($id);
 
         if ($deleted) {
-            ApiResponse::success("Ressource supprimée avec succès", [], 200);
+            ApiResponse::success("Ressource supprimé avec succès", [], 200);
         } else {
             ApiResponse::error("Erreur lors de la suppression de la ressource", [], 500);
         }

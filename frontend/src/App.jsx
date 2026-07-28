@@ -10,7 +10,10 @@ import Register from "./pages/Register.jsx";
 import Campings from "./pages/Campings.jsx";
 import Sentiers from "./pages/Sentiers.jsx";
 import Resources from "./pages/Resources.jsx";
+import PrivateRoutes from "./PrivateRoutes.jsx";
+import AdminDashboard from "./pages/AdminDashboard.jsx";
 import Error from "./pages/Error.jsx";
+import TermsOfServices from "./pages/TermsOfServices.jsx";
 
 import './assets/css/App.css'
 
@@ -25,10 +28,20 @@ function App() {
                 <Route path="/login"                    element={<Login />} />
                 <Route path="/register"                 element={<Register />} />
                 <Route path="/campings"                 element={<Campings />} /> 
+                <Route path="/campings/:campingId"      element={<Campings />} />
                 <Route path="/sentiers"                 element={<Sentiers />} />
                 <Route path="/sentiers/:sentierId"      element={<Sentiers />} />
                 <Route path="/resources"                element={<Resources />} />
-                <Route path="/resources/:resourceId"    element={<Resources />} />
+                <Route path="/resources/:resourceId"    element={<Resources />} /> 
+                <Route 
+                    path="/dashboard" 
+                    element={
+                        <PrivateRoutes>
+                            <AdminDashboard />
+                        </PrivateRoutes>
+                    }
+                />
+                <Route path="/terms-of-services"        element={<TermsOfServices />} />
                 <Route path="*"                         element={<Error />} />
             </Routes>
 

@@ -9,10 +9,19 @@ use Utils\Validator;
 
 class AuthController {
     private UserModel $model;
+    private Auth $auth;
+    private JWT $jwt;      
+    private string $secret;
 
-    public function __construct()
-    {
-        $this->model = new UserModel();
+    public function __construct(
+    UserModel $model,
+    JWT $jwt,
+    Auth $auth
+    ) {
+        $this->model = $model;
+        $this->jwt = $jwt;
+        $this->auth = $auth;
+        $this->secret = $_ENV['SECRET_KEY'] ?? '';
     }
 
     /**
@@ -45,23 +54,22 @@ class AuthController {
      * @param string $email
      * @param string $password
      * @return array|null Payload if successful, otherwise null
-     */
+     */ 
     public function login(string $username, string $email, string $password): ?array
     {
         $user = $this->model->getUserByUsernameOrEmail($username, $email);
         
         if ($user && password_verify($password, $user['password'])) {
-            $jwt = new JWT();
             $payload = [
                 'id' => $user['id'],
                 'username' => $user['username'],
-                'role' => $user['role']
+                'role' => $user['role_id']
             ];
 
-            $token = $jwt->generateToken(
+            $token = $this->jwt->generateToken(
                 ['alg' => 'HS256', 'typ' => 'JWT'],
                 $payload,
-                $_ENV['SECRET_KEY'],
+                $this->secret,
                 3600
             );
 
@@ -105,14 +113,17 @@ class AuthController {
 
         if (!Validator::isValidEmail($email)) {
             ApiResponse::error("Email invalide", [], 400);
+            return;
         }
 
         if (!Validator::isValidUsername($username)) {
             ApiResponse::error("Nom d'utilisateur invalide", [], 400);
+            return;
         }
         
         if (!Validator::isValidPassword($password)) {
             ApiResponse::error("Mot de passe trop invalide", [], 400);
+            return;
         }
 
         $existingUser = $this->model->isUserAlreadyExist($username, $email);
@@ -162,20 +173,32 @@ class AuthController {
      */
     public function logoutApi(): void
     {
-        $jwtToken = $_COOKIE['jwt_token'] ?? null;
-        $this->logout($jwtToken);
+        $this->logout();
 
         ApiResponse::success("Déconnexion réussie", [], 200);
     }
 
+    /**
+     * GET /api/checkAuth
+     * Check authentication API endpoint
+     * @return void
+     */
     public function checkAuthApi(): void
     {
-        $payload = Auth::checkAuth();
+        $jwtToken = $_COOKIE['jwt_token'] ?? null;
 
-        if ($payload) {
-            ApiResponse::success("Authentification réussie", ['user' => $payload], 200);
-        } else {
-            ApiResponse::error("Non autorisé", [], 401);
+        if (!$jwtToken) {
+            ApiResponse::error("Token manquant", [], 401);
+            return;
         }
+
+        $payload = $this->auth->checkAuth($jwtToken);
+        
+        if ($payload === null) {
+            ApiResponse::error("Token invalide ou expiré", [], 401);
+            return;
+        }
+
+        ApiResponse::success("Authentification réussie", ['user' => $payload], 200);
     }
 }

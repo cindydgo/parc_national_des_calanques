@@ -1,24 +1,31 @@
 <?php
 namespace Utils;
 
+/**
+ * Authentication utility class
+ */
 class Auth
 {
+    private ?JWT $jwt = null;
+    private string $secret = '';
+
+    public function __construct(JWT $jwt, string $secret)
+    {
+        $this->jwt = $jwt;
+        $this->secret = $secret;
+    }
+
     /**
-     * CheckAuth testable
+     * Check authentication
      * @param string $jwtToken JWT token
-     * @param string $secret Secret key
      * @return array|null Payload if valid, otherwise null
      */
-    public function checkAuth(string $jwtToken, string $secret): ?array
+    public function checkAuth(string $jwtToken): ?array
     {
-        $jwt = new JWT();
-
-        if (!$jwt->validateToken($jwtToken, $secret)) {
+        if (!$this->jwt->validateToken($jwtToken, $this->secret)) {
             return null;
         }
 
-        $payload = $jwt->getPayload($jwtToken);
-
-        return $payload;
+        return $this->jwt->getPayload($jwtToken);
     }
 }

@@ -3,15 +3,14 @@ namespace App\Controllers;
 
 use App\Models\CampingModel;
 use Core\ApiResponse;
-use Utils\Auth;
 
 final class CampingsController
 {
     private CampingModel $model;
 
-    public function __construct()
+    public function __construct(?CampingModel $model = null)
     {
-        $this->model = new CampingModel();
+        $this->model = $model ?? new CampingModel();
     }
 
     /**

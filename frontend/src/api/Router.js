@@ -2,28 +2,38 @@ import { API_PATH } from "../../config/bootstrap.js";
 import HttpClient from "./HttpClient.js";
 
 export default function Router(route) {
-    const basePath = `${API_PATH}/${route}`;
+    const basePath = API_PATH;
 
-    const buildUrl = (method, id, filters = {}, strict = true) => {
-        id = sanitizeId(id, basePath, method);
-        if (strict && !id) {
-            console.warn(`[Router] ~ ${method} ~ ${basePath} : L'id ${id} n'est pas un entier positif.`);
+    // Construit l'URL avec ID et filtres
+    const buildUrl = (id = null, filters = {}, strict = true) => {
+        const validId = sanitizeId(id);
+        if (strict && id && !validId) {
+            console.warn(`[Router] buildUrl: L'id ${id} n'est pas un entier positif.`);
             return false;
         }
 
         let finalPath = basePath;
-        finalPath += id ? `/${id}` : "";
-        finalPath += getParsedFilters(filters);
+
+        // Prépare les filtres + id
+        const params = { resource: route, ...filters };
+        if (validId) params.id = validId;
+
+        const queryString = getParsedFilters(params);
+        if (queryString) finalPath += `?${queryString}`;
+
+        console.log("buildUrl:", finalPath);
+
         return finalPath;
-    }
+    };
 
     async function getOne(id) {
-        const url = buildUrl("GET", id);
+        const url = buildUrl(id);
         return url ? await HttpClient.get(url) : getGenericError();
     }
 
     async function getAll(filters = {}) {
-        return await HttpClient.get(buildUrl("GET", null, filters, false));
+        const url = buildUrl(null, filters, false);
+        return url ? await HttpClient.get(url) : getGenericError();
     }
 
     async function post(data) {
@@ -31,26 +41,29 @@ export default function Router(route) {
     }
 
     async function put(id, data) {
-        const url = buildUrl("PUT", id)
+        const url = buildUrl(id);
         return url ? await HttpClient.put(url, data) : getGenericError();
     }
 
     async function patch(id, data) {
-        const url = buildUrl("PATCH", id)
+        const url = buildUrl(id);
         return url ? await HttpClient.patch(url, data) : getGenericError();
     }
 
     async function remove(id) {
-        const url = buildUrl("DELETE", id);
+        const url = buildUrl(id);
         return url ? await HttpClient.remove(url, id) : getGenericError();
     }
 
     return { getOne, getAll, post, put, patch, remove };
 }
 
+// Transforme un objet filtre en query string
 function getParsedFilters(filters) {
     if (!filters || Object.keys(filters).length === 0) return "";
-    return "?" + Object.entries(filters).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join("&");
+    return Object.entries(filters)
+        .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
+        .join("&");
 }
 
 function sanitizeId(id) {
@@ -62,5 +75,7 @@ function getGenericError() {
     return {
         success: false,
         message: "Une erreur inattendue est survenue."
-    }
+    };
 }
+
+

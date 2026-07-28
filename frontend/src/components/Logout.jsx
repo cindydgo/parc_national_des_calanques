@@ -1,5 +1,7 @@
 import { useAuth } from '../Context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import "../assets/css/Logout.css";
 
 function LogoutComponent() {
     const { logout } = useAuth();
@@ -11,7 +13,7 @@ function LogoutComponent() {
     };
 
     return (
-        <button type="submit" onClick={handleLogout}>Se déconnecter</button>
+        <button type="submit" className="btn btn-custom fw-semibold" onClick={handleLogout}>Se déconnecter</button>
     );
 }
 

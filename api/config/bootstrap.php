@@ -15,7 +15,7 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 use Dotenv\Dotenv;
 
-// Charger les variables d'environnement
+// load .env variables if exists
 if (file_exists(__DIR__ . '/../.env')) {
     $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
     $dotenv->load();

@@ -1,0 +1,30 @@
+.dashboard-container {
+    background-color: rgb(118, 153, 175, 0.07);
+}
+
+.left-dashboard-grid{
+    background-color: #212529;
+    color: white;
+    width: 20%;
+}
+
+.fa-user::before, .fa-person-walking::before, .fa-tree::before, .fa-home::before {
+    font-size: 20px;
+    display: block;
+    width: 20px;
+}
+
+.left-dashboard-grid li {
+    display: flex;
+    width: 100%;
+    gap: 1rem;
+    cursor: pointer;
+}
+
+.dashboard-card {
+    padding: .5rem;
+    max-height: 110px;
+}
+.dashboard-card-body {
+    padding: 0;
+}

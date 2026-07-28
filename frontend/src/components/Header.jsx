@@ -1,13 +1,14 @@
 import NavBar from "./Navbar.jsx"
-import Logo from '../assets/images/logo-calanques.jpg'
-import LogoutComponent from "./Logout.jsx"  
+import Logo from '/images/logo-calanques.jpg'
+import { Link } from "react-router"
 
 function Header() {
     return(
-        <header>
-            <img className="logo" src={Logo} alt="Logo Parc National des Calanques" />
+        <header className="d-flex align-items-center shadow-sm">
+            <Link to="/" className="logo-link" style={{'width': '20%'}}>
+                <img className="logo" src={Logo} alt="Logo Parc National des Calanques" />
+            </Link>
             <NavBar />
-            <LogoutComponent />
         </header>
     )
 }

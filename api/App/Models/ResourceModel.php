@@ -2,13 +2,12 @@
 namespace App\Models;
 
 use Core\Model;
-use Core\ApiResponse;
 
-final class ResourcesModel extends Model
+final class ResourceModel extends Model
 {
     public function __construct()
     {
-        parent::__construct('ressources');
+        parent::__construct('resources');
     }
 
     /**
@@ -57,7 +56,7 @@ final class ResourcesModel extends Model
     }
 
     /**
-     * Delete a resource
+     * Delete an resource
      * @param int $id Resource ID
      * @return bool
      */
