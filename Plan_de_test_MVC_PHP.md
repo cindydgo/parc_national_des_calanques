@@ -40,10 +40,6 @@
 | T024 | Auth | Unitaire (Mock) | `checkAuth()` | Token invalide | Retourne `null` | ✅ OK |
 | T025 | Auth | Unitaire (Mock) | `checkAuth()` | Vérification du secret | Le bon secret est utilisé | ✅ OK |
 | T026 | Auth | Unitaire (Mock) | `checkAuth()` | Validation échouée | `getPayload()` n'est jamais appelé | ✅ OK |
-| T027 | UserModel | Intégration | `getUser()` | Recherche utilisateur | Utilisateur retourné | ⏳ À faire |
-| T028 | UserModel | Intégration | `createUser()` | Création utilisateur | Nouvel ID retourné | ⏳ À faire |
-| T029 | UserModel | Intégration | `updateUser()` | Modification utilisateur | Retourne `true` | ⏳ À faire |
-| T030 | UserModel | Intégration | `deleteUser()` | Suppression utilisateur | Retourne `true` | ⏳ À faire |
 
 ## Résumé
 
@@ -72,7 +68,6 @@
 | JWT | Génération et validation vérifiées |
 | Validation | Emails, noms d'utilisateur et mots de passe testés |
 | Authentification | Vérifiée avec des mocks PHPUnit |
-| À venir | Tests d'intégration `UserModel` et tests du `AuthController` |
 | Couverture | Les composants critiques liés à la sécurité sont validés |
 
 

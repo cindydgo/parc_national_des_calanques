@@ -40,7 +40,7 @@ class TestUserRepository extends Database
         return $this->delete($id);
     }
 
-    
+
     public function clearTable(): void
     {
         $this->getPdo()->exec("DELETE FROM users");

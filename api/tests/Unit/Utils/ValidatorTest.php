@@ -79,7 +79,7 @@ class ValidatorTest extends TestCase
     }
 
 
-    public function testPasswordWithoutUppercaseReturnsFalse(): void
+    public function testPwdWithoutUppercaseReturnsFalse(): void
     {
         $this->assertFalse(
             Validator::isValidPassword('password123')
@@ -87,7 +87,7 @@ class ValidatorTest extends TestCase
     }
 
 
-    public function testPasswordWithoutLowercaseReturnsFalse(): void
+    public function testPwdWithoutLowercaseReturnsFalse(): void
     {
         $this->assertFalse(
             Validator::isValidPassword('PASSWORD123')
@@ -95,7 +95,7 @@ class ValidatorTest extends TestCase
     }
 
 
-    public function testPasswordWithoutNumberReturnsFalse(): void
+    public function testPwdWithoutNumberReturnsFalse(): void
     {
         $this->assertFalse(
             Validator::isValidPassword('Password')
@@ -103,15 +103,15 @@ class ValidatorTest extends TestCase
     }
 
 
-    public function testPasswordTooShortReturnsFalse(): void
+    public function testPwdTooShortReturnsFalse(): void
     {
         $this->assertFalse(
             Validator::isValidPassword('Pass1')
         );
     }
 
-    
-    public function testEmptyPasswordReturnsFalse(): void
+
+    public function testEmptyPwdReturnsFalse(): void
     {
         $this->assertFalse(
             Validator::isValidPassword('')
