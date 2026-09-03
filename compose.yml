@@ -1,0 +1,44 @@
+services:
+
+  backend:
+    build:
+      context: ./api
+    container_name: php-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api:/app
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+    depends_on:
+      - database
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: js-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      VITE_API_PATH: "http://localhost:8000/api/"
+    depends_on:
+      - backend
+
+  database:
+    image: mysql:8.4
+    container_name: mysql-database
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./database/parc_national.sql:/docker-entrypoint-initdb.d/parc_national.sql
+
+volumes:
+  mysql-data:

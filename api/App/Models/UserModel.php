@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Core\Model;
@@ -12,7 +13,7 @@ final class UserModel extends Model
 
     /**
      * Get all users with optional filters
-     * @param array $data Filters to apply
+     * @param array $filters Filters to apply
      * @return array
      */
     public function getUsers(array $filters = []): array

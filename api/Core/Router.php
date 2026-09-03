@@ -2,6 +2,10 @@
 
 namespace Core;
 
+use App\Controllers\AuthController;
+use App\Models\UserModel;
+use Utils\JWT;
+use Utils\Auth;
 use Core\ApiResponse;
 
 final class Router
@@ -40,14 +44,32 @@ final class Router
         }
 
         $controllerName = ucfirst($resource) . 'Controller';
-        $controllerClass = "\\App\\Controllers\\$controllerName";
+        $controllerClass = "App\\Controllers\\$controllerName";
 
         if (!class_exists($controllerClass)) {
             ApiResponse::error("Contrôleur $controllerName introuvable.", [], 404);
             return;
         }
 
-        $controller = new $controllerClass();
+        if ($controllerClass === AuthController::class) {
+
+            $model = new UserModel();
+
+            $jwt = new JWT();
+
+            $secret = $_ENV['SECRET_KEY'] ?? '';
+
+            $auth = new Auth($jwt, $secret);
+
+            $controller = new AuthController(
+                $model,
+                $jwt,
+                $auth
+            );
+        } else {
+            $controller = new $controllerClass();
+        }
+
         $key = "$resource:$action";
 
         // Vérifie si des middlewares sont définis pour cette route
