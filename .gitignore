@@ -7,12 +7,23 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# PHP
+/api/vendor/
+
+/api/.phpunit.cache/
+
+/api/.phpunit.result.cache
+
+# Node
 node_modules
 dist
 dist-ssr
+*.local
+
+# Environment
 .env
 .env.*
-*.local
+!.env.example
 
 # Editor directories and files
 .vscode/*
