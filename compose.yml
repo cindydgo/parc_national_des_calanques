@@ -8,13 +8,16 @@ services:
       - "8000:8000"
     volumes:
       - ./api:/app
+      - /app/vendor
     environment:
       DB_HOST: ${DB_HOST}
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASS: ${DB_PASS}
     depends_on:
-      - database
+      database:
+        condition: service_healthy
+    restart: unless-stopped
 
   frontend:
     build:
@@ -29,16 +32,27 @@ services:
       VITE_API_PATH: "http://localhost:8000/api/"
     depends_on:
       - backend
+    restart: unless-stopped
 
   database:
     image: mysql:8.4
     container_name: mysql-database
+
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+
     volumes:
       - mysql-data:/var/lib/mysql
       - ./database/parc_national.sql:/docker-entrypoint-initdb.d/parc_national.sql
+
+    restart: unless-stopped
 
 volumes:
   mysql-data:
