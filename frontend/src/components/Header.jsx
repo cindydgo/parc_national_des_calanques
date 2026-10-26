@@ -1,4 +1,4 @@
-import NavBar from "./Navbar.jsx"
+import NavBar from './NavBar'
 import Logo from '/images/logo-calanques.jpg'
 import { Link } from "react-router"
 
