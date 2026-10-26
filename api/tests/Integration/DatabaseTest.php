@@ -16,10 +16,10 @@ class DatabaseTest extends TestCase
     }
 
 
-public function testCreateUser(): void
+    public function testCreateUser(): void
     {
         $id = $this->repository->createUser([
-            'name' => 'Jean',
+            'username' => 'Jean',
             'email' => 'jean@test.com'
         ]);
 
@@ -29,21 +29,21 @@ public function testCreateUser(): void
         $user = $this->repository->getUser($id);
 
         $this->assertNotNull($user);
-        $this->assertSame('Jean', $user['name']);
+        $this->assertSame('Jean', $user['username']);
     }
 
 
     public function testReadOneUser(): void
     {
         $id = $this->repository->createUser([
-            'name' => 'Alice',
+            'username' => 'Alice',
             'email' => 'alice@test.com'
         ]);
 
         $user = $this->repository->getUser($id);
 
         $this->assertNotNull($user);
-        $this->assertSame('Alice', $user['name']);
+        $this->assertSame('Alice', $user['username']);
         $this->assertSame('alice@test.com', $user['email']);
     }
 
@@ -59,12 +59,12 @@ public function testCreateUser(): void
     public function testUpdateUser(): void
     {
         $id = $this->repository->createUser([
-            'name' => 'Bob',
+            'username' => 'Bob',
             'email' => 'bob@test.com'
         ]);
 
         $result = $this->repository->updateUser($id, [
-            'name' => 'Robert'
+            'username' => 'Robert'
         ]);
 
         $this->assertTrue($result);
@@ -73,7 +73,7 @@ public function testCreateUser(): void
 
         $this->assertSame(
             'Robert',
-            $user['name']
+            $user['username']
         );
     }
 
@@ -81,7 +81,7 @@ public function testCreateUser(): void
     public function testDeleteUser(): void
     {
         $this->repository->createUser([
-            'name' => 'Marc',
+            'username' => 'Marc',
             'email' => 'marc@test.com'
         ]);
 
@@ -99,25 +99,25 @@ public function testCreateUser(): void
     public function testWhereFilter(): void
     {
         $this->repository->createUser([
-            'name' => 'Paul',
+            'username' => 'Paul',
             'email' => 'paul@test.com'
         ]);
 
         $this->repository->createUser([
-            'name' => 'Julie',
+            'username' => 'Julie',
             'email' => 'julie@test.com'
         ]);
 
 
         $users = $this->repository->getUsers([
-            'name' => 'Julie'
+            'username' => 'Julie'
         ]);
 
 
         $this->assertCount(1, $users);
         $this->assertSame(
             'Julie',
-            $users[0]['name']
+            $users[0]['username']
         );
     }
 
@@ -125,25 +125,25 @@ public function testCreateUser(): void
     public function testOrderBy(): void
     {
         $this->repository->createUser([
-            'name' => 'Zoe',
+            'username' => 'Zoe',
             'email' => 'zoe@test.com'
         ]);
 
         $this->repository->createUser([
-            'name' => 'Alice',
+            'username' => 'Alice',
             'email' => 'alice@test.com'
         ]);
 
 
         $users = $this->repository->getUsers([
-            'order_by' => 'name',
+            'order_by' => 'username',
             'order_dir' => 'ASC'
         ]);
 
 
         $this->assertSame(
             'Alice',
-            $users[0]['name']
+            $users[0]['username']
         );
     }
 
@@ -152,7 +152,7 @@ public function testCreateUser(): void
     {
         for ($i = 1; $i <= 5; $i++) {
             $this->repository->createUser([
-                'name' => "User $i",
+                'username' => "User $i",
                 'email' => "user$i@test.com"
             ]);
         }

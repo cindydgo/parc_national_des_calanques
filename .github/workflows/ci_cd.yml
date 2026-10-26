@@ -3,11 +3,9 @@ name: CI - Parc des Calanques
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
   pull_request:
-    branches:
-      - master
+    branches: [master]
 
 permissions:
   contents: read
@@ -16,6 +14,22 @@ jobs:
   test-and-build:
     name: Tests and Build
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root_password
+          MYSQL_DATABASE: parc_national_test
+          MYSQL_USER: test_user
+          MYSQL_PASSWORD: test_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
 
     steps:
       - name: Check out repository
@@ -42,11 +56,19 @@ jobs:
         run: |
           find api -type f -name "*.php" \
             -not -path "api/vendor/*" \
-            -print0 | xargs -0 -r -n1 php -l
+            -print0 | xargs -0 -r -n1 php -ls
+
+      - name: Load test environment variables
+        run: grep -Ev '^\s*(#|$)' api/.env.testing >> "$GITHUB_ENV"
+
+      - name: Import database schema
+        run: |
+          mysql -h 127.0.0.1 -u test_user -ptest_password parc_national_test \
+            < api/database/parc_national.sql
 
       - name: Run PHPUnit tests
         working-directory: api
-        run: vendor/bin/phpunit --testsuite Unit
+        run: vendor/bin/phpunit 
 
       # React / Vite frontend
       - name: Set up Node.js
@@ -70,7 +92,7 @@ jobs:
 
       # Docker images
       - name: Validate Docker Compose configuration
-        run: docker compose config
+        run: docker compose --env-file .env.example config
 
       - name: Build backend Docker image
         run: docker build -t parc-calanques-api:ci ./api
