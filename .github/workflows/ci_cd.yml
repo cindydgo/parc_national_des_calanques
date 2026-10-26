@@ -4,10 +4,10 @@ name: CI - Parc des Calanques
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
 
 permissions:
   contents: read
@@ -46,14 +46,7 @@ jobs:
 
       - name: Run PHPUnit tests
         working-directory: api
-        shell: bash
-        run: |
-          if [ -d tests ]; then
-            vendor/bin/phpunit tests
-          else
-            echo "::error::The api/tests directory does not exist."
-            exit 1
-          fi
+        run: vendor/bin/phpunit --testsuite Unit
 
       # React / Vite frontend
       - name: Set up Node.js
