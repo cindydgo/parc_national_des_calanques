@@ -268,3 +268,6 @@ Les valeurs réelles doivent être renseignées dans le fichier `.env` et **ne d
 
 Le fichier `.env.example` peut être versionné afin de fournir un modèle de configuration sans exposer de données sensibles.
 
+## CI/CD
+
+Le fonctionnement du pipeline, la configuration des secrets GitHub et le lancement des tests en local sont décrits dans [CI_CD.md](CI_CD.md).

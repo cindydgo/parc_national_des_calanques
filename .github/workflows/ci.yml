@@ -16,25 +16,28 @@ jobs:
     name: Backend (PHP)
     runs-on: ubuntu-latest
 
+    # Identifiants de la base de test : secrets du dépôt (voir CI_CD.md)
     services:
       mysql:
         image: mysql:8.4
         env:
           MYSQL_DATABASE: test_database
-          MYSQL_ROOT_PASSWORD: root
+          MYSQL_USER: ${{ secrets.TEST_DB_USER }}
+          MYSQL_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
+          MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping -h localhost -uroot -proot"
+          --health-cmd="mysqladmin ping -h 127.0.0.1 --silent"
           --health-interval=5s
           --health-timeout=5s
-          --health-retries=10
+          --health-retries=20
 
     env:
       DB_HOST: 127.0.0.1
       DB_NAME: test_database
-      DB_USER: root
-      DB_PASS: root
+      DB_USER: ${{ secrets.TEST_DB_USER }}
+      DB_PASS: ${{ secrets.TEST_DB_PASSWORD }}
 
     steps:
       - name: Check out repository
@@ -61,12 +64,21 @@ jobs:
             -not -path "api/vendor/*" \
             -print0 | xargs -0 -r -n1 php -l
 
-      - name: Import database schema
-        run: mysql -h 127.0.0.1 -u root -proot test_database < database/parc_national.sql
-
       - name: Run unit tests
         working-directory: api
         run: vendor/bin/phpunit --testsuite Unit
+
+      - name: Check test database secrets
+        run: |
+          if [ -z "$DB_USER" ] || [ -z "$DB_PASS" ]; then
+            echo "::error::Secrets TEST_DB_USER et/ou TEST_DB_PASSWORD manquants (voir CI_CD.md)."
+            exit 1
+          fi
+
+      - name: Import database schema
+        env:
+          MYSQL_PWD: ${{ secrets.TEST_DB_PASSWORD }}
+        run: mysql -h 127.0.0.1 -u "$DB_USER" test_database < database/parc_national.sql
 
       - name: Run integration tests
         working-directory: api
