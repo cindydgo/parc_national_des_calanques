@@ -9,4 +9,4 @@ $dotenv = Dotenv::createImmutable(
     '.env.testing'
 );
 
-$dotenv->load();
+$dotenv->safeLoad();

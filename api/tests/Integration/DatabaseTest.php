@@ -16,12 +16,20 @@ class DatabaseTest extends TestCase
     }
 
 
-public function testCreateUser(): void
+    private function userData(string $username, string $email): array
     {
-        $id = $this->repository->createUser([
-            'name' => 'Jean',
-            'email' => 'jean@test.com'
-        ]);
+        return [
+            'username' => $username,
+            'password' => password_hash('secret', PASSWORD_DEFAULT),
+            'email' => $email,
+            'role_id' => 1
+        ];
+    }
+
+
+    public function testCreateUser(): void
+    {
+        $id = $this->repository->createUser($this->userData('Jean', 'jean@test.com'));
 
         $this->assertIsInt($id);
         $this->assertGreaterThan(0, $id);
@@ -29,21 +37,18 @@ public function testCreateUser(): void
         $user = $this->repository->getUser($id);
 
         $this->assertNotNull($user);
-        $this->assertSame('Jean', $user['name']);
+        $this->assertSame('Jean', $user['username']);
     }
 
 
     public function testReadOneUser(): void
     {
-        $id = $this->repository->createUser([
-            'name' => 'Alice',
-            'email' => 'alice@test.com'
-        ]);
+        $id = $this->repository->createUser($this->userData('Alice', 'alice@test.com'));
 
         $user = $this->repository->getUser($id);
 
         $this->assertNotNull($user);
-        $this->assertSame('Alice', $user['name']);
+        $this->assertSame('Alice', $user['username']);
         $this->assertSame('alice@test.com', $user['email']);
     }
 
@@ -58,13 +63,10 @@ public function testCreateUser(): void
 
     public function testUpdateUser(): void
     {
-        $id = $this->repository->createUser([
-            'name' => 'Bob',
-            'email' => 'bob@test.com'
-        ]);
+        $id = $this->repository->createUser($this->userData('Bob', 'bob@test.com'));
 
         $result = $this->repository->updateUser($id, [
-            'name' => 'Robert'
+            'username' => 'Robert'
         ]);
 
         $this->assertTrue($result);
@@ -73,24 +75,22 @@ public function testCreateUser(): void
 
         $this->assertSame(
             'Robert',
-            $user['name']
+            $user['username']
         );
     }
 
 
     public function testDeleteUser(): void
     {
-        $this->repository->createUser([
-            'name' => 'Marc',
-            'email' => 'marc@test.com'
-        ]);
+        $id = $this->repository->createUser($this->userData('Marc', 'marc@test.com'));
 
+        $this->assertNotNull($this->repository->getUser($id));
 
-        $result = $this->repository->deleteUser(1);
+        $result = $this->repository->deleteUser($id);
 
         $this->assertTrue($result);
 
-        $user = $this->repository->getUser(1);
+        $user = $this->repository->getUser($id);
 
         $this->assertNull($user);
     }
@@ -98,52 +98,40 @@ public function testCreateUser(): void
 
     public function testWhereFilter(): void
     {
-        $this->repository->createUser([
-            'name' => 'Paul',
-            'email' => 'paul@test.com'
-        ]);
+        $this->repository->createUser($this->userData('Paul', 'paul@test.com'));
 
-        $this->repository->createUser([
-            'name' => 'Julie',
-            'email' => 'julie@test.com'
-        ]);
+        $this->repository->createUser($this->userData('Julie', 'julie@test.com'));
 
 
         $users = $this->repository->getUsers([
-            'name' => 'Julie'
+            'username' => 'Julie'
         ]);
 
 
         $this->assertCount(1, $users);
         $this->assertSame(
             'Julie',
-            $users[0]['name']
+            $users[0]['username']
         );
     }
 
 
     public function testOrderBy(): void
     {
-        $this->repository->createUser([
-            'name' => 'Zoe',
-            'email' => 'zoe@test.com'
-        ]);
+        $this->repository->createUser($this->userData('Zoe', 'zoe@test.com'));
 
-        $this->repository->createUser([
-            'name' => 'Alice',
-            'email' => 'alice@test.com'
-        ]);
+        $this->repository->createUser($this->userData('Alice', 'alice@test.com'));
 
 
         $users = $this->repository->getUsers([
-            'order_by' => 'name',
+            'order_by' => 'username',
             'order_dir' => 'ASC'
         ]);
 
 
         $this->assertSame(
             'Alice',
-            $users[0]['name']
+            $users[0]['username']
         );
     }
 
@@ -151,10 +139,7 @@ public function testCreateUser(): void
     public function testLimit(): void
     {
         for ($i = 1; $i <= 5; $i++) {
-            $this->repository->createUser([
-                'name' => "User $i",
-                'email' => "user$i@test.com"
-            ]);
+            $this->repository->createUser($this->userData("User $i", "user$i@test.com"));
         }
 
 
@@ -163,5 +148,15 @@ public function testCreateUser(): void
         ]);
 
         $this->assertCount(2, $users);
+    }
+
+
+    public function testRejectsInvalidColumnName(): void
+    {
+        $this->expectException(Exception::class);
+
+        $this->repository->getUsers([
+            'order_by' => 'id; DROP TABLE users'
+        ]);
     }
 }

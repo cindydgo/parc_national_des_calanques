@@ -1,8 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: http://localhost:5173');
 header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
@@ -21,3 +17,8 @@ if (file_exists(__DIR__ . '/../.env')) {
     $dotenv->load();
 }
 
+// Display errors only outside production
+$isProduction = ($_ENV['APP_ENV'] ?? getenv('APP_ENV') ?: 'production') === 'production';
+error_reporting(E_ALL);
+ini_set('display_errors', $isProduction ? '0' : '1');
+ini_set('display_startup_errors', $isProduction ? '0' : '1');

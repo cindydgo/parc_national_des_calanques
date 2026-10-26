@@ -1,0 +1,118 @@
+name: CI - Parc des Calanques
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend (PHP)
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: test_database
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -uroot -proot"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      DB_HOST: 127.0.0.1
+      DB_NAME: test_database
+      DB_USER: root
+      DB_PASS: root
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up PHP 8.3
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_mysql, zip, mbstring, xml
+          coverage: none
+
+      - name: Validate Composer configuration
+        working-directory: api
+        run: composer validate --no-check-publish
+
+      - name: Install PHP dependencies
+        working-directory: api
+        run: composer install --prefer-dist --no-interaction
+
+      - name: Check PHP syntax
+        run: |
+          find api -type f -name "*.php" \
+            -not -path "api/vendor/*" \
+            -print0 | xargs -0 -r -n1 php -l
+
+      - name: Import database schema
+        run: mysql -h 127.0.0.1 -u root -proot test_database < database/parc_national.sql
+
+      - name: Run unit tests
+        working-directory: api
+        run: vendor/bin/phpunit --testsuite Unit
+
+      - name: Run integration tests
+        working-directory: api
+        run: vendor/bin/phpunit --testsuite Integration
+
+  frontend:
+    name: Frontend (React / Vite)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Lint frontend code
+        working-directory: frontend
+        run: npm run lint
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+
+  docker:
+    name: Docker images
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Validate Docker Compose configuration
+        run: docker compose --env-file .env.example config --quiet
+
+      - name: Build backend Docker image
+        run: docker build -t parc-calanques-api:ci ./api
+
+      - name: Build frontend Docker image
+        run: docker build -t parc-calanques-frontend:ci ./frontend

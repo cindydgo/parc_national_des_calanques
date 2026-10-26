@@ -39,6 +39,7 @@ abstract class Database {
     
     // Create
     protected function create(array $data): bool {
+        $this->assertIdentifiers(array_keys($data));
         $fields = implode(', ', array_keys($data));
         $placeholders = implode(', ', array_map(fn($k) => ":$k", array_keys($data)));
         return $this->sqlQuery("INSERT INTO $this->tableName ($fields) VALUES ($placeholders)", $data);
@@ -58,6 +59,7 @@ abstract class Database {
     
     // Update
     protected function update(int $id, array $data): bool {
+        $this->assertIdentifiers(array_keys($data));
         $setters = implode(', ', array_map(fn($k) => "$k = :$k", array_keys($data)));
         return $this->sqlQuery("UPDATE $this->tableName SET $setters WHERE id = :id;", ['id' => $id, ...$data]);
     }
@@ -116,10 +118,12 @@ abstract class Database {
         $clauses = '';
         
         if (isset($filters['group_by'])) {
+            $this->assertIdentifiers([$filters['group_by']]);
             $clauses .= " GROUP BY {$filters['group_by']}";
         }
         
         if (isset($filters['order_by'])) {
+            $this->assertIdentifiers([$filters['order_by']]);
             $direction = isset($filters['order_dir']) && strtolower($filters['order_dir']) === 'asc' ? 'ASC' : 'DESC';
             $clauses .= " ORDER BY {$filters['order_by']} $direction";
         }
@@ -140,10 +144,25 @@ abstract class Database {
      * @return string
      */
     private function getWhereClauses(array $filters): string {
+        $this->assertIdentifiers(array_keys($filters));
         $clauses = [];
         foreach (array_keys($filters) as $key) {
             $clauses[] = "$key = :$key";
         }
         return implode(' AND ', $clauses);
+    }
+
+    /**
+     * Vérifie que chaque nom de colonne est un identifiant SQL simple,
+     * pour empêcher l'injection via les clés de filtres ou de données.
+     * @param array $identifiers
+     * @throws Exception
+     */
+    private function assertIdentifiers(array $identifiers): void {
+        foreach ($identifiers as $identifier) {
+            if (!is_string($identifier) || !preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $identifier)) {
+                throw new Exception("Nom de colonne invalide : " . (string) $identifier);
+            }
+        }
     }
 }
