@@ -64,7 +64,7 @@ jobs:
       - name: Import database schema
         run: |
           mysql -h 127.0.0.1 -u test_user -ptest_password parc_national_test \
-            < api/database/parc_national.sql
+            < database/parc_national.sql
 
       - name: Run PHPUnit tests
         working-directory: api
