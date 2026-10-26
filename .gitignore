@@ -25,6 +25,8 @@ dist-ssr
 .env.*
 !.env.example
 
+!api/.env.testing
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
